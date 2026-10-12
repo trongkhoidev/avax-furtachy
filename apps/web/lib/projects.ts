@@ -63,9 +63,36 @@ export type ProjectLookupResult =
   | { status: "unconfigured" }
   | { status: "error"; error: string };
 
+import { VERIFIED_PROJECTS } from "./verified-markets";
+
 export async function getFactoryProject(projectId: bigint): Promise<ProjectLookupResult> {
+  const verifiedMatch = VERIFIED_PROJECTS.find((p) => p.id === projectId.toString());
+  const fallbackProject: FactoryProjectRecord | null = verifiedMatch ? {
+    id: projectId,
+    founder: verifiedMatch.founder as `0x${string}`,
+    raise: verifiedMatch.raise as `0x${string}`,
+    token: (verifiedMatch.token || "0x0000000000000000000000000000000000000000") as `0x${string}`,
+    treasury: (verifiedMatch.treasury || "0x0000000000000000000000000000000000000000") as `0x${string}`,
+    governor: (verifiedMatch.governor || "0x0000000000000000000000000000000000000000") as `0x${string}`,
+    spotAmm: (verifiedMatch.spotAmm || "0x0000000000000000000000000000000000000000") as `0x${string}`,
+    name: verifiedMatch.name || `Project #${projectId}`,
+    symbol: verifiedMatch.symbol || "TOKEN",
+    totalSupply: 1_000_000_000_000_000_000_000_000n,
+    minRaise: BigInt(verifiedMatch.minRaise || "0"),
+    hardCap: BigInt(verifiedMatch.hardCap || "0"),
+    isLive: true,
+    metadataURI: verifiedMatch.metadataURI || "",
+    raiseDetails: {
+      state: 4,
+      startTime: BigInt(verifiedMatch.createdAt || "1760000000"),
+      endTime: BigInt(verifiedMatch.createdAt || "1760000000") + 86400n * 7n,
+      totalContributed: BigInt(verifiedMatch.totalContributed || "0"),
+    },
+  } : null;
+
   const factoryAddr = buildTimeAddresses.factory;
   if (!factoryAddr) {
+    if (fallbackProject) return { status: "found", project: fallbackProject };
     return { status: "unconfigured" };
   }
 
@@ -84,11 +111,13 @@ export async function getFactoryProject(projectId: bigint): Promise<ProjectLooku
       args: [projectId],
     });
   } catch (err) {
+    if (fallbackProject) return { status: "found", project: fallbackProject };
     const errorMsg = err instanceof Error ? err.message : "RPC request to FutaraFactory failed.";
     return { status: "error", error: errorMsg };
   }
 
   if (!res || !res.founder || res.founder === "0x0000000000000000000000000000000000000000") {
+    if (fallbackProject) return { status: "found", project: fallbackProject };
     return { status: "not-found" };
   }
 

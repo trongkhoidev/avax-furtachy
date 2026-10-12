@@ -52,7 +52,7 @@ export function ProposalExperience({ governor, proposalId }: { governor: string;
 
   useEffect(() => {
     if (!govAddr || numericProposalId === null) return;
-    const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+    const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
     let active = true;
     void fetch(`${apiBase}/api/v1/proposals/${govAddr}/${numericProposalId.toString()}`, { cache: "no-store" })
       .then(async (response) => {

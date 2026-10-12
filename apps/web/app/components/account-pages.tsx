@@ -23,7 +23,7 @@ export function PortfolioPage() {
 
   const fetchPortfolio = async (address: string) => {
     setLoading(true);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+    const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
     try {
       const res = await fetch(`${apiBase}/api/v1/users/${encodeURIComponent(address)}/portfolio`, {
         cache: "no-store",

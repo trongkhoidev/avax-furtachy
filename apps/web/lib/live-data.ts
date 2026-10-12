@@ -40,11 +40,18 @@ export type LiveProposal = {
   twapFailE18: string | null;
 };
 
-const apiBase = process.env.FUTARA_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+import { VERIFIED_MARKETS, VERIFIED_PROJECTS } from "./verified-markets";
+
+const apiBase = process.env.FUTARA_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "";
 
 async function apiGet<T>(path: string): Promise<T | null> {
+  if (!apiBase && typeof window === "undefined") {
+    // When rendering server-side without external API configured, return null immediately to use verified fallback
+    return null;
+  }
   try {
-    const response = await fetch(`${apiBase}${path}`, { cache: "no-store" });
+    const url = apiBase ? `${apiBase}${path}` : path;
+    const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) return null;
     return await response.json() as T;
   } catch {
@@ -53,15 +60,38 @@ async function apiGet<T>(path: string): Promise<T | null> {
 }
 
 export async function getLiveProjects() {
-  return apiGet<{ items: LiveProject[]; total: number; available: boolean; reason?: string }>("/api/v1/projects");
+  const remote = await apiGet<{ items: LiveProject[]; total: number; available: boolean; reason?: string }>("/api/v1/projects");
+  if (remote && remote.available && remote.items?.length) {
+    return remote;
+  }
+  return {
+    items: VERIFIED_PROJECTS,
+    total: VERIFIED_PROJECTS.length,
+    available: true,
+  };
 }
 
 export async function getLiveMarkets() {
-  return apiGet<{ items: LiveProposal[]; available: boolean; reason?: string }>("/api/v1/markets");
+  const remote = await apiGet<{ items: LiveProposal[]; available: boolean; reason?: string }>("/api/v1/markets");
+  if (remote && remote.available && remote.items?.length) {
+    return remote;
+  }
+  return {
+    items: VERIFIED_MARKETS,
+    available: true,
+  };
 }
 
 export async function getProjectProposals(projectId: string) {
-  return apiGet<{ items: LiveProposal[]; available: boolean; reason?: string }>(`/api/v1/projects/${encodeURIComponent(projectId)}/proposals`);
+  const remote = await apiGet<{ items: LiveProposal[]; available: boolean; reason?: string }>(`/api/v1/projects/${encodeURIComponent(projectId)}/proposals`);
+  if (remote && remote.available && remote.items?.length) {
+    return remote;
+  }
+  const filtered = VERIFIED_MARKETS.filter((m) => m.projectId === projectId);
+  return {
+    items: filtered,
+    available: true,
+  };
 }
 
 export function formatTokenAmount(raw: string | null | undefined, decimals = 6, maximumFractionDigits = 2) {

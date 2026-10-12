@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight, CircleAlert, Sparkles } from "lucide-react";
 import { PageIntro } from "@/app/components/ui";
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 type Forecaster = {
   agentId: string;
