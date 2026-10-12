@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+.next
+apps/web/.next
+apps/web/.next-*
+packages/contracts/out
+packages/contracts/cache
+packages/contracts/lib
+.turbo
+.git
+.playwright-mcp
+coverage
+docker-compose.yml
+docs
