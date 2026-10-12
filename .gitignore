@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build & outputs
+.next
+apps/web/.next/
+apps/web/.next-*/
+dist
+out
+packages/contracts/out
+packages/contracts/cache
+cache
+artifacts
+broadcast
+.turbo
+
+# Environment & secrets
+.env
+.env.*
+.env.local
+!.env.example
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+
+# Vercel & testing
+.vercel
+.playwright-mcp
+coverage
+*.log
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Ponder
+ponder-env.d.ts

@@ -1,0 +1,8 @@
+{
+  "name": "@futara/keeper",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "tsx watch src/index.ts", "build": "tsc -p tsconfig.json", "typecheck": "tsc --noEmit -p tsconfig.json" },
+  "dependencies": { "@futara/sdk": "workspace:*", "@hono/node-server": "^1.13.8", "hono": "^4.7.2", "viem": "^2.23.2" },
+  "devDependencies": { "tsx": "^4.19.3", "typescript": "^5.8.3" }
+}

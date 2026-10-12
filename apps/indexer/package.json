@@ -1,0 +1,8 @@
+{
+  "name": "@futara/indexer",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "ponder dev", "build": "ponder codegen && tsc -p tsconfig.json --noEmit", "typecheck": "ponder codegen && tsc --noEmit" },
+  "dependencies": { "ponder": "^0.9.15", "viem": "^2.23.2" },
+  "devDependencies": { "typescript": "^5.8.3" }
+}
